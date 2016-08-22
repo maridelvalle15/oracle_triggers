@@ -105,8 +105,6 @@ CREATE OR REPLACE TRIGGER update_departamento
     BEFORE UPDATE OF jefe_dep ON Departamento FOR EACH ROW
     DECLARE
         jefes NUMBER;
-        dep_viejo Jefe.dep%TYPE;
-        dep Jefe.dep%TYPE;
         PRAGMA AUTONOMOUS_TRANSACTION;
     BEGIN
         IF (:OLD.jefe_dep IS NULL) THEN
@@ -114,6 +112,25 @@ CREATE OR REPLACE TRIGGER update_departamento
             IF (jefes = 0) THEN
                 RAISE_APPLICATION_ERROR(-20500, 'Un jefe no puede estar asignado'
                 ||' a dos departamentos.');
+            END IF;
+        END IF;
+        commit;
+    END; 
+/
+
+-- UPDATE JEFE
+
+CREATE OR REPLACE TRIGGER update_jefe
+    BEFORE UPDATE OF dep ON Jefe FOR EACH ROW
+    DECLARE
+        departamentos NUMBER;
+        PRAGMA AUTONOMOUS_TRANSACTION;
+    BEGIN
+        IF (:OLD.dep IS NULL) THEN
+            SELECT COUNT(*) into departamentos FROM Departamento d WHERE REF(d) = :NEW.dep and d.jefe_dep.cedula <> :OLD.cedula;
+            IF (departamentos > 0) THEN
+                RAISE_APPLICATION_ERROR(-20500, 'Un departamento no puede tener asignado'
+                ||' dos jefes.');
             END IF;
         END IF;
         commit;
