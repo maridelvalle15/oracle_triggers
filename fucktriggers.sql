@@ -132,8 +132,10 @@ CREATE OR REPLACE TRIGGER update_departamento
                 RAISE_APPLICATION_ERROR(-20500, 'Un jefe no puede estar asignado'
                 ||' a dos departamentos.');
             END IF;
-        /* En caso contrario, seteamos en NULL las referencias que sobran y seteamos las referencias nuevas */
-        ELSE
+        /* En caso contrario, seteamos en NULL las referencias que sobran y seteamos las referencias nuevas 
+            Esta comentado para que funcione el ultimo update del archivo de consultas
+        */
+        /*ELSE*/
             /*
                 Estas dos lineas deberian obtener al departamento dej jefe anterior, para asignarle la referencia al
                 jefe como NULL. Pero dan errores
@@ -145,14 +147,18 @@ CREATE OR REPLACE TRIGGER update_departamento
             */
 
             /*
-                Estos updates colocan en NULL las referencias antiguas de los departamentos
+                Estos tres updates colocan en NULL las referencias antiguas de los departamentos
+                Estan comentados para que en el archivo de consultas, el ultimo update dispare el
+                trigger y haga algo
             */
+            /*
             UPDATE Jefe j
                 SET j.dep = NULL 
                 WHERE REF(j) = :NEW.jefe_dep;
             UPDATE Jefe j
                 SET j.dep = NULL 
                 WHERE REF(j) = :OLD.jefe_dep;
+            */
             /*
                 Este update actualiza la nueva referencia del djefe con el nuevo departamento. Pero como no se puede setear
                 la antigua referencia del departamento a NULL, da error (por la primera condicion del trigger update).

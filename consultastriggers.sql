@@ -67,7 +67,7 @@ INSERT INTO Departamento
 
 /* Actualizamos un jefe que ya trabajaba en un departamento, a un departamento que ya tenia jefe. 
     Dispara el trigger y coloca en NULL la referencia a jefe en el Departamento anterior
-    Esta linea a veces funciona, a veces no. Cuando no, da el error ORA-00060: deadlock detected while waiting for resource
+    Esta linea no funciona si descomentamos el ELSE del trigger update_departamento. Da el error ORA-00060: deadlock detected while waiting for resource
  */
 ALTER TRIGGER update_jefe ENABLE;
 UPDATE Jefe SET dep = (SELECT REF(d) FROM Departamento d WHERE d.nombre='Departamento 1') WHERE cedula='V-18765234';
